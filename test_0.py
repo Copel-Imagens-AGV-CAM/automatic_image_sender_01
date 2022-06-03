@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-import ftplib
-from posixpath import split
-import subprocess
-import time
+#import ftplib
+#from posixpath import split
+#import subprocess
+#import time
 import os
 #from tkinter import image_names
 import paramiko, sys
@@ -19,29 +19,22 @@ os.makedirs(sent_directory, exist_ok=True)      # cria diretório de realocaçã
 mission_folder = [os.path.join(images_directory, name) for name in os.listdir(images_directory)] # lista todas as pastas do diretório de origem
 for i  in range(len(mission_folder)):               # para cada pasta do diretório de origem
     folder_name_list = mission_folder[i].split("_") # separa o nome das pastas do caminho do diretório de horigem em relação ao caractere A
-    #print(folder_name_list)
-    folder_name = folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]
-    local_directory = sent_directory + "/" + folder_name
-    print("s",local_directory)
-    os.makedirs(local_directory, exist_ok=True)
-    folders_in_mission_list = [ name for name in os.listdir(mission_folder[i]) if os.path.isdir(os.path.join(mission_folder[i], name)) ]
-    for j in range(len(folders_in_mission_list)):
-        folders_in_mission = local_directory +"/"+ folders_in_mission_list[j]
-        print("f",folders_in_mission)
-        os.makedirs(folders_in_mission, exist_ok=True)
-    #print(folder_name)
-    remote_folder = remote_path+folder_name
-    #print(remote_folder)
-    images_directory = mission_folder[i]
+    folder_name = folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]    # cria o nome correto da pasta
+    local_directory = sent_directory + "/" + folder_name                                    # cria o caminho para diretório local de realcação
+    os.makedirs(local_directory, exist_ok=True)                                             # cria o diretório local de realocação se ele não existir
+    folders_in_mission_list = [ name for name in os.listdir(mission_folder[i]) if os.path.isdir(os.path.join(mission_folder[i], name)) ] # lista todas as pastas no diretório de missão
+    for j in range(len(folders_in_mission_list)):                                           # para cada pasta dentro de uma pasta de missão
+        folders_in_mission = local_directory +"/"+ folders_in_mission_list[j]               # cria o caminho para diretório local de realcação (rgb_data)
+        os.makedirs(folders_in_mission, exist_ok=True)                                      # cria o diretório local de realcação (rgb_data)
+    remote_folder = remote_path + folder_name                                               # cria caminho para o diretório remoto
+    images_directory = mission_folder[i]                                                    # salva vistagem de conteúdo do diretório local
     caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
     arquivos = [arq for arq in caminhos if os.path.isfile(arq)]
     jpgs = [arq for arq in arquivos if arq.lower().endswith(".jpg")]
     print("w",jpgs,len(jpgs))
-    
-    transport = paramiko.Transport((FTP_HOST, 22))
-    transport.connect(username = FTP_USER, password = FTP_PASS)
-    sftp = paramiko.SFTPClient.from_transport(transport)
-    
+    transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
+    transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
+    sftp = paramiko.SFTPClient.from_transport(transport)                
     try:
         sftp.chdir(remote_folder)  # Test if remote_path exists
     except IOError:
@@ -55,10 +48,12 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
         image_path = jpgs[j].split("/")
         image_name = image_path[-1]
         #print("top",jpgs[j], image_name)
-        sftp.put(jpgs[j], os.path.join(remote_folder, image_name))
-        print("u",local_directory +"/"+ image_name)
-        os.replace(jpgs[j],local_directory +"/"+ image_name)
-        
+        try:
+            sftp.put(jpgs[j], os.path.join(remote_folder, image_name))
+            print("u",local_directory +"/"+ image_name)
+            os.replace(jpgs[j],local_directory +"/"+ image_name)
+        except:
+            pass    
         #my_list = os.listdir(mission_folder[i])
         #sftp.put(jpgs[j], remote_folder)
         '''
@@ -89,9 +84,11 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
             image_name = image_path[-1]
             remote_folder = remote_path + folder_name +"/"+ folders_in_mission_list[j]
             #print("pow",jpgs[k], image_name,remote_folder)
-            
-            sftp.put(jpgs[k], os.path.join(remote_folder, image_name))
-            os.replace(jpgs[k],local_directory +"/"+ folders_in_mission_list[j] +"/"+ image_name)
+            try:
+                sftp.put(jpgs[k], os.path.join(remote_folder, image_name))
+                os.replace(jpgs[k],local_directory +"/"+ folders_in_mission_list[j] +"/"+ image_name)
+            except:
+                pass
             #my_list = os.listdir(mission_folder[i])
             #sftp.put(jpgs[j], remote_folder)
             '''

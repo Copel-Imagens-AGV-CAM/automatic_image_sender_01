@@ -86,3 +86,5 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
         transport.close()
     else:
         # delatar todas as pastas e subpastas contidas na pasta Imagens
+        for i in range(mission_folder):
+            shutil.rmtree(mission_folder[i])

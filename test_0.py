@@ -81,10 +81,10 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                     sent_images+=1
                 except:
                     pass
-    if(images_to_server_flag==True):
-        sftp.close()
-        transport.close()
-    else:
-        # delatar todas as pastas e subpastas contidas na pasta Imagens
-        for i in range(mission_folder):
-            shutil.rmtree(mission_folder[i])
+if(images_to_server_flag==True):
+    sftp.close()
+    transport.close()
+else:
+    # delatar todas as pastas e subpastas contidas na pasta Imagens
+    for i in range(len(mission_folder)):
+        shutil.rmtree(mission_folder[i])

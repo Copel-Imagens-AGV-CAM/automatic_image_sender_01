@@ -10,9 +10,9 @@ import shutil
 FTP_HOST = "172.31.0.11"                        # credenciais de acesso
 FTP_USER = "agvuser"
 FTP_PASS = "lpee@2022"
-images_to_server_flag = False
-folder_exists = False
-connection_flag = False
+images_to_server_flag = False                   # flag para indicar se há imagnes a serem enviadas para o servidor ou não
+folder_exists = False                           # flag para indicar se exite as pastas necessárias no seridor ou se elas precisam ser cridas
+connection_flag = False                         # flag para indicar se há conecxão
 sent_images = 0
 images_directory = '/home/user/Imagens'         # diretório local de origem
 sent_directory = '/home/user/Enviados'          # diretório local para realocação

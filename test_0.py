@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+from ast import If
+from multiprocessing import connection
 import os
+from re import T
 import paramiko
 import shutil
 
@@ -8,6 +11,8 @@ FTP_HOST = "172.31.0.11"                        # credenciais de acesso
 FTP_USER = "agvuser"
 FTP_PASS = "lpee@2022"
 images_to_server_flag = False
+folder_exists = False
+connection_flag = False
 sent_images = 0
 images_directory = '/home/user/Imagens'         # diretório local de origem
 sent_directory = '/home/user/Enviados'          # diretório local para realocação
@@ -36,13 +41,21 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                 transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
                 transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
                 sftp = paramiko.SFTPClient.from_transport(transport)
+                connection_flag = True
             except:
-                break                
-        try:
-            sftp.chdir(remote_folder)  # Test if remote_path exists. Cria pastas.
-        except IOError:
-            sftp.mkdir(remote_folder)  # Create remote_path
-            sftp.chdir(remote_folder)
+                connection_flag = False
+        if(connection_flag==True):
+            try:
+                sftp.chdir(remote_folder)  # Test if remote_path exists. Cria pastas.
+                folder_exists = True
+            except IOError:
+                folder_exists = False
+            if(folder_exists==False):
+                try:
+                    sftp.mkdir(remote_folder)  # Create remote_path
+                    sftp.chdir(remote_folder)
+                except:
+                    pass
         for j in range(len(jpgs)):
             image_path = jpgs[j].split("/") # Divide o a string do caminhos dos aquivos a partir do /.
             image_name = image_path[-1]     # Seleciona aparte fianl do string dividido como o nome do arquivo.
@@ -64,14 +77,22 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                     transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
                     transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
                     sftp = paramiko.SFTPClient.from_transport(transport)
+                    connection_flag = True
                 except:
-                    break
+                    connection_flag = False
             folders_in_mission = remote_path + folder_name +"/"+ folders_in_mission_list[j] #gera caminhos para as subpasta da pasta imagens
-            try:
-                sftp.chdir(folders_in_mission)  # Test if remote_path. Cria subpastas na pasta enviados.
-            except IOError:
-                sftp.mkdir(folders_in_mission)  # Create remote_path.
-                sftp.chdir(folders_in_mission)
+            if(connection_flag==True):
+                try:
+                    sftp.chdir(folders_in_mission)  # Test if remote_path. Cria subpastas na pasta enviados.
+                    folder_exists = True
+                except IOError:
+                    folder_exists = False
+                if(folder_exists==False):
+                    try:
+                        sftp.mkdir(folders_in_mission)  # Create remote_path.
+                        sftp.chdir(folders_in_mission)
+                    except:
+                        pass
             for k in range(len(jpgs)):          # para cada imagem em dada subpasta.
                 image_path = jpgs[k].split("/")
                 image_name = image_path[-1]     # gera nome da imagem a partir da string do caminho
@@ -83,8 +104,9 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                 except:
                     pass
 if(images_to_server_flag==True):
-    sftp.close()
-    transport.close()
+    if(connection_flag==True):
+        sftp.close()
+        transport.close()
 else:
     # delatar todas as pastas e subpastas contidas na pasta Imagens
     for i in range(len(mission_folder)):

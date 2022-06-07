@@ -59,6 +59,7 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
         jpgs = [arq for arq in arquivos if arq.lower().endswith(".jpg")]    # lista imagens.
         if(len(jpgs)>0):
             if(images_to_server_flag==False):
+                images_to_server_flag = True
                 try:
                     transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
                     transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação

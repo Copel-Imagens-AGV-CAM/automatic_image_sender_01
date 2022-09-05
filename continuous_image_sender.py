@@ -22,7 +22,7 @@ os.makedirs(images_directory, exist_ok=True)    # cria diretório de origem caso
 os.makedirs(sent_directory, exist_ok=True)      # cria diretório de realocação caso não exista
 mission_folder = [os.path.join(images_directory, name) for name in os.listdir(images_directory)] # lista todas as pastas do diretório de origem
 for i  in range(len(mission_folder)):               # para cada pasta do diretório de origem
-    folder_name_list = mission_folder[i].split("_") # separa o nome das pastas do caminho do diretório de origem em relação ao caractere A
+    folder_name_list = mission_folder[i].split("/")[-1].split("_") # separa o nome das pastas do caminho do diretório de origem em relação ao caractere A
     if(len(folder_name_list)<=3):
         folder_name = folder_name_list[0] #folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]    # cria o nome correto da pasta
     else:

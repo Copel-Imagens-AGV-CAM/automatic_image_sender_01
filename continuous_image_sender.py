@@ -28,7 +28,10 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
     else:
         folder_name = folder_name_list[0]+'_RGB'
     local_directory = sent_directory + "/" + folder_name                                    # cria o caminho para diretório local de realcação
-    os.makedirs(local_directory, exist_ok=True)                                             # cria o diretório local de realocação se ele não existir
+    dia_atual=datetime.now().day
+    dia_pasta = folder_name.split('_')[0].split('-')[2]
+    if(int(dia_pasta)!=int(dia_atual)):
+        os.makedirs(local_directory, exist_ok=True)                                             # cria o diretório local de realocação se ele não existir
     #folders_in_mission_list = [ name for name in os.listdir(mission_folder[i]) if os.path.isdir(os.path.join(mission_folder[i], name)) ] # lista todas as pastas no diretório de missão
     #for j in range(len(folders_in_mission_list)):                                           # para cada pasta dentro de uma pasta de missão
     #    folders_in_mission = local_directory +"/"+ folders_in_mission_list[j]               # cria o caminho para diretório local de realcação (rgb_data)
@@ -38,19 +41,18 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
     #caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
     arquivos = [arq for arq in images_directory if os.path.isfile(arq)]
     jpgs = [arq for arq in arquivos if arq.lower().endswith(".jpg")]
-    dia_atual=datetime.now().day
-    dia_pasta = folder_name.split('_')[0].split('-')[2]
-    if(int(dia_pasta)!=int(dia_atual)):
-        if(len(jpgs)>0):
-            if(images_to_server_flag==False):
-                images_to_server_flag = True
-                try:
-                    transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
-                    transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
-                    sftp = paramiko.SFTPClient.from_transport(transport)
-                    connection_flag = True
-                except:
-                    connection_flag = False
+    
+    if(len(jpgs)>0):
+        if(images_to_server_flag==False):
+            images_to_server_flag = True
+            try:
+                transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
+                transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
+                sftp = paramiko.SFTPClient.from_transport(transport)
+                connection_flag = True
+            except:
+                connection_flag = False
+        if(int(dia_pasta)!=int(dia_atual)):
             if(connection_flag==True):
                 try:
                     sftp.chdir(remote_folder)  # Test if remote_path exists. Cria pastas.
@@ -63,6 +65,7 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                         sftp.chdir(remote_folder)
                     except:
                         pass
+        if(int(dia_pasta)!=int(dia_atual)):
             for j in range(len(jpgs)):
                 image_path = jpgs[j].split("/") # Divide o a string do caminhos dos aquivos a partir do /.
                 image_name = image_path[-1]     # Seleciona aparte fianl do string dividido como o nome do arquivo.
@@ -76,7 +79,7 @@ if(images_to_server_flag==True):
     if(connection_flag==True):
         sftp.close()
         transport.close()
-else:
-    # delatar todas as pastas e subpastas contidas na pasta Imagens
-    for i in range(len(mission_folder)):
-        shutil.rmtree(mission_folder[i])
+# else:
+#     # delatar todas as pastas e subpastas contidas na pasta Imagens
+#     for i in range(len(mission_folder)):
+#         shutil.rmtree(mission_folder[i])

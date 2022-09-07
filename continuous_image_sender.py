@@ -39,8 +39,8 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
     #    os.makedirs(folders_in_mission, exist_ok=True)                                      # cria o diretório local de realcação (rgb_data)
     remote_folder = remote_path + folder_name                                               # cria caminho para o diretório remoto
     images_directory = mission_folder[i]                                                    # salva listagem de conteúdo do diretório local
-    #caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
-    arquivos = [arq for arq in images_directory if os.path.isfile(arq)]
+    caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
+    arquivos = [arq for arq in caminhos if os.path.isfile(arq)]
     jpgs = [arq for arq in arquivos if arq.lower().endswith(".jpg")]
     print('2')
     if(len(jpgs)>0):

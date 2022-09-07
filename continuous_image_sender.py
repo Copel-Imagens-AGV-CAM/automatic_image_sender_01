@@ -21,7 +21,6 @@ remote_path = '/home/shared/A700_fixa/'         # diretório remoto de destino
 os.makedirs(images_directory, exist_ok=True)    # cria diretório de origem caso não exista
 os.makedirs(sent_directory, exist_ok=True)      # cria diretório de realocação caso não exista
 mission_folder = [os.path.join(images_directory, name) for name in os.listdir(images_directory)] # lista todas as pastas do diretório de origem
-print('1')
 for i  in range(len(mission_folder)):               # para cada pasta do diretório de origem
     folder_name_list = mission_folder[i].split("/")[-1].split("_") # separa o nome das pastas do caminho do diretório de origem em relação ao caractere A
     if(len(folder_name_list)<=3):
@@ -42,45 +41,34 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
     caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
     arquivos = [arq for arq in caminhos if os.path.isfile(arq)]
     jpgs = [arq for arq in arquivos if arq.lower().endswith(".jpg")]
-    print('2')
     if(len(jpgs)>0):
-        print('3')
         if(images_to_server_flag==False):
             images_to_server_flag = True
             try:
-                print('4')
                 transport = paramiko.Transport((FTP_HOST, 22))                      # conectar com servidor sftp
                 transport.connect(username = FTP_USER, password = FTP_PASS)         # autenticação
                 sftp = paramiko.SFTPClient.from_transport(transport)
                 connection_flag = True
-                print('5')
             except:
                 connection_flag = False
-            print(connection_flag)
         if(int(dia_pasta)!=int(dia_atual)):
             if(connection_flag==True):
                 try:
-                    print('6')
                     sftp.chdir(remote_folder)  # Test if remote_path exists. Cria pastas.
                     folder_exists = True
-                    print('7')
                 except IOError:
                     folder_exists = False
                 if(folder_exists==False):
                     try:
-                        print('8')
                         sftp.mkdir(remote_folder)  # Create remote_path
                         sftp.chdir(remote_folder)
-                        print('9')
                     except:
                         pass
         if(int(dia_pasta)!=int(dia_atual)):
             for j in range(len(jpgs)):
-                print('10')
                 image_path = jpgs[j].split("/") # Divide o a string do caminhos dos aquivos a partir do /.
                 image_name = image_path[-1]     # Seleciona aparte fianl do string dividido como o nome do arquivo.
                 try:
-                    print('11')
                     sftp.put(jpgs[j], os.path.join(remote_folder, image_name))  # Faz upload do arquivo para os ervidor FTP
                     os.replace(jpgs[j],local_directory +"/"+ image_name)        # Move o arquivo da pasta iamgens para a pasta enviados.
                     sent_images+=1
@@ -91,8 +79,7 @@ if(images_to_server_flag==True):
     if(connection_flag==True):
         sftp.close()
         transport.close()
-print('13')
-# else:
-#     # delatar todas as pastas e subpastas contidas na pasta Imagens
-#     for i in range(len(mission_folder)):
-#         shutil.rmtree(mission_folder[i])
+else:
+    # delatar todas as pastas e subpastas contidas na pasta Imagens
+    for i in range(len(mission_folder)):
+        shutil.rmtree(mission_folder[i])

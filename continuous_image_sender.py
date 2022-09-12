@@ -72,14 +72,16 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
                     sftp.put(jpgs[j], os.path.join(remote_folder, image_name))  # Faz upload do arquivo para os ervidor FTP
                     os.replace(jpgs[j],local_directory +"/"+ image_name)        # Move o arquivo da pasta iamgens para a pasta enviados.
                     sent_images+=1
-                    print('12')
                 except:
-                    pass    
+                    pass
+    else:
+        shutil.rmtree(mission_folder[i])
+
 if(images_to_server_flag==True):
     if(connection_flag==True):
         sftp.close()
         transport.close()
-else:
-    # delatar todas as pastas e subpastas contidas na pasta Imagens
-    for i in range(len(mission_folder)):
-        shutil.rmtree(mission_folder[i])
+# else:
+#     # delatar todas as pastas e subpastas contidas na pasta Imagens
+#     for i in range(len(mission_folder)):
+#         shutil.rmtree(mission_folder[i])

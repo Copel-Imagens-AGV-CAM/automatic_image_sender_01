@@ -17,26 +17,26 @@ connection_flag = False                         # flag para indicar se há conec
 sent_images = 0
 images_directory = '/home/user/continuous_capture'         # diretório local de origem
 sent_directory = '/home/user/Enviados/continuous_capture'  # diretório local para realocação
-remote_path = '/home/shared/A700_fixa/'         # diretório remoto de destino
+sent_directory_rgb = '/home/user/Enviados/rgb_data'        # diretório local para realocação rg
+remote_path = '/home/shared/A700_fixa/'                    # diretório remoto de destino
+remote_path_rgb='/home/shared/inspecoes/rgb_data/'         # diretório remoto de destino rgb
 os.makedirs(images_directory, exist_ok=True)    # cria diretório de origem caso não exista
 os.makedirs(sent_directory, exist_ok=True)      # cria diretório de realocação caso não exista
 mission_folder = [os.path.join(images_directory, name) for name in os.listdir(images_directory)] # lista todas as pastas do diretório de origem
 for i  in range(len(mission_folder)):               # para cada pasta do diretório de origem
     folder_name_list = mission_folder[i].split("/")[-1].split("_") # separa o nome das pastas do caminho do diretório de origem em relação ao caractere A
     if(len(folder_name_list)<=3):
-        folder_name = folder_name_list[0] #folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]    # cria o nome correto da pasta
+        folder_name = 'fixa_'+folder_name_list[0] #folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]    # cria o nome correto da pasta
+        local_directory = sent_directory + "/" + folder_name
+        remote_folder = remote_path + folder_name
     else:
-        folder_name = folder_name_list[0]+'_RGB'
-    local_directory = sent_directory + "/" + folder_name                                    # cria o caminho para diretório local de realcação
+        folder_name = 'fixa_'+folder_name_list[0]+'_RGB'
+        local_directory = sent_directory_rgb + "/" + folder_name
+        remote_folder = remote_path_rgb + folder_name                                    # cria o caminho para diretório local de realcação
     dia_atual=datetime.now().day
-    dia_pasta = folder_name.split('_')[0].split('-')[2]
+    dia_pasta = folder_name.split('_')[1].split('-')[2]
     if(int(dia_pasta)!=int(dia_atual)):
         os.makedirs(local_directory, exist_ok=True)                                             # cria o diretório local de realocação se ele não existir
-    #folders_in_mission_list = [ name for name in os.listdir(mission_folder[i]) if os.path.isdir(os.path.join(mission_folder[i], name)) ] # lista todas as pastas no diretório de missão
-    #for j in range(len(folders_in_mission_list)):                                           # para cada pasta dentro de uma pasta de missão
-    #    folders_in_mission = local_directory +"/"+ folders_in_mission_list[j]               # cria o caminho para diretório local de realcação (rgb_data)
-    #    os.makedirs(folders_in_mission, exist_ok=True)                                      # cria o diretório local de realcação (rgb_data)
-    remote_folder = remote_path + folder_name                                               # cria caminho para o diretório remoto
     images_directory = mission_folder[i]                                                    # salva listagem de conteúdo do diretório local
     caminhos = [os.path.join(images_directory, name) for name in os.listdir(images_directory)]
     arquivos = [arq for arq in caminhos if os.path.isfile(arq)]
@@ -67,7 +67,7 @@ for i  in range(len(mission_folder)):               # para cada pasta do diretó
         if(int(dia_pasta)!=int(dia_atual)):
             for j in range(len(jpgs)):
                 image_path = jpgs[j].split("/") # Divide o a string do caminhos dos aquivos a partir do /.
-                image_name = image_path[-1]     # Seleciona aparte fianl do string dividido como o nome do arquivo.
+                image_name = 'fixa_'+image_path[-1]     # Seleciona aparte fianl do string dividido como o nome do arquivo.
                 try:
                     sftp.put(jpgs[j], os.path.join(remote_folder, image_name))  # Faz upload do arquivo para os ervidor FTP
                     os.replace(jpgs[j],local_directory +"/"+ image_name)        # Move o arquivo da pasta iamgens para a pasta enviados.

@@ -17,22 +17,19 @@ connection_flag = False                         # flag para indicar se há conec
 sent_images = 0
 images_directory = '/home/user/continuous_capture'         # diretório local de origem
 sent_directory = '/home/user/Enviados/continuous_capture'  # diretório local para realocação
-sent_directory_rgb = '/home/user/Enviados/rgb_data'        # diretório local para realocação rg
-remote_path = '/home/shared/A700_fixa/'                    # diretório remoto de destino
-remote_path_rgb='/home/shared/inspecoes/rgb_data/'         # diretório remoto de destino rgb
+remote_path = '/home/shared/inspecoes/'                    # diretório remoto de destino
 os.makedirs(images_directory, exist_ok=True)    # cria diretório de origem caso não exista
 os.makedirs(sent_directory, exist_ok=True)      # cria diretório de realocação caso não exista
 mission_folder = [os.path.join(images_directory, name) for name in os.listdir(images_directory)] # lista todas as pastas do diretório de origem
 for i  in range(len(mission_folder)):               # para cada pasta do diretório de origem
     folder_name_list = mission_folder[i].split("/")[-1].split("_") # separa o nome das pastas do caminho do diretório de origem em relação ao caractere A
-    if(len(folder_name_list)<=3):
-        folder_name = 'fixa_'+folder_name_list[0] #folder_name_list[-3]+"_"+folder_name_list[-2]+"_"+folder_name_list[-1]    # cria o nome correto da pasta
+    folder_name = 'fixa_'+folder_name_list[0]     # cria o nome correto da pasta
+    if(len(folder_name_list)<=3):    
         local_directory = sent_directory + "/" + folder_name
         remote_folder = remote_path + folder_name
     else:
-        folder_name = 'fixa_'+folder_name_list[0]+'_RGB'
-        local_directory = sent_directory_rgb + "/" + folder_name
-        remote_folder = remote_path_rgb + folder_name                                    # cria o caminho para diretório local de realcação
+        local_directory = sent_directory + "/" + folder_name +"/rgb_data"
+        remote_folder = remote_path + folder_name + '/rgb_data'                                 # cria o caminho para diretório local de realcação
     dia_atual=datetime.now().day
     dia_pasta = folder_name.split('_')[1].split('-')[2]
     if(int(dia_pasta)!=int(dia_atual)):
